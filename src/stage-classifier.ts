@@ -23,7 +23,7 @@ import { FUNNEL_STAGES, type FunnelStage } from "./types.ts";
  *   - Sharing the main chat client by default. On OpenRouter every turn
  *     pays ~$0.0001-0.001 extra; on Ollama+CPU classification adds 5-30s.
  *     Operators wanting cheap classification should point a small/fast
- *     model at this — see `SALES_STAGE_CLASSIFIER_MODEL` env (TODO Phase 3+).
+ *     model at this via `SALES_STAGE_CLASSIFIER_MODEL` env variable.
  *   - Temperature is hard-pinned to 0 for deterministic classification.
  */
 
@@ -143,6 +143,7 @@ export async function classifyStage(
     `Сообщение клиента: """${input.userMessage}"""\n\n` +
     `JSON:`;
 
+  const classifierModel = process.env.SALES_STAGE_CLASSIFIER_MODEL;
   let raw: string;
   try {
     raw = await input.chat.complete(
@@ -150,7 +151,10 @@ export async function classifyStage(
         { role: "system", content: SYSTEM_PROMPT },
         { role: "user", content: userPrompt },
       ],
-      { temperature: 0 },
+      {
+        temperature: 0,
+        ...(classifierModel ? { model: classifierModel } : {}),
+      },
     );
   } catch {
     return fallback("llm-error", 0);

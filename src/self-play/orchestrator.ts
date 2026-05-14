@@ -93,6 +93,8 @@ export interface SelfPlayMatchResult {
   fabricationsCaught: number;
   /** Row id in self_play_matches, or null when the insert failed. */
   matchId: number | null;
+  /** Non-fatal errors collected during the match (e.g. skill grading failures). */
+  warnings: string[];
 }
 
 const DEFAULT_MAX_TURNS = 20;
@@ -162,6 +164,7 @@ export async function runSelfPlayMatch(
   let userMessageCount = 1;
   const usedSkills = new Set<string>();
   let fabricationsCaught = 0;
+  const warnings: string[] = [];
   const STALL_LIMIT = 3;
   let consecutiveStalls = 0;
 
@@ -224,7 +227,9 @@ export async function runSelfPlayMatch(
         });
         for (const slug of used) usedSkills.add(slug);
       } catch (err) {
-        console.warn("[self-play] per-turn skill grading failed:", err);
+        warnings.push(
+          `turn ${turn + 1} skill grading: ${err instanceof Error ? err.message : String(err)}`,
+        );
       }
     }
 
@@ -251,6 +256,7 @@ export async function runSelfPlayMatch(
         verdict,
         usedSkills,
         fabricationsCaught,
+        warnings,
       );
     }
     candidateText = candidateText.trim();
@@ -267,6 +273,7 @@ export async function runSelfPlayMatch(
         verdict,
         usedSkills,
         fabricationsCaught,
+        warnings,
       );
     }
     transcript.push({ role: "candidate", text: candidateText });
@@ -290,6 +297,7 @@ export async function runSelfPlayMatch(
     verdict,
     usedSkills,
     fabricationsCaught,
+    warnings,
   );
 }
 
@@ -301,6 +309,7 @@ async function finalize(
   verdict: JudgeVerdict,
   usedSkills: Set<string>,
   fabricationsCaught: number,
+  warnings: string[] = [],
 ): Promise<SelfPlayMatchResult> {
   const attributedSkills =
     usedSkills.size > 0 ? skills.filter((s) => usedSkills.has(s.slug)) : skills;
@@ -324,6 +333,7 @@ async function finalize(
     leadId,
     fabricationsCaught,
     matchId: null,
+    warnings,
   };
   result.matchId = await persistSelfPlayMatch(deps, result, verdict.reason);
   return result;
