@@ -1,6 +1,6 @@
 # @chatman/sales
 
-[![CI](https://github.com/chatman-media/chatman_sales/actions/workflows/ci.yml/badge.svg)](https://github.com/chatman-media/chatman_sales/actions/workflows/ci.yml)
+[![CI](https://github.com/chatman-media/sales/actions/workflows/ci.yml/badge.svg)](https://github.com/chatman-media/sales/actions/workflows/ci.yml)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Bun](https://img.shields.io/badge/runtime-Bun-fbf0df?logo=bun&logoColor=black)](https://bun.sh)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)

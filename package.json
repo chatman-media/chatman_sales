@@ -3,11 +3,23 @@
   "version": "0.1.0",
   "description": "LLM-powered sales funnel engine — persona composition, A/B testing, ELO rating, self-play evaluation for conversational bots.",
   "type": "module",
-  "main": "./src/index.ts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
   },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
+    "build": "bun build ./src/index.ts --outdir ./dist --target node --format esm && tsc -p tsconfig.build.json",
+    "prepublishOnly": "bun test && bun run build",
     "typecheck": "tsc --noEmit",
     "test": "bun test",
     "check": "biome check ./src",
@@ -32,19 +44,20 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/chatman-media/chatman_sales.git"
+    "url": "https://github.com/chatman-media/sales.git"
   },
-  "homepage": "https://github.com/chatman-media/chatman_sales#readme",
+  "homepage": "https://github.com/chatman-media/sales#readme",
   "bugs": {
-    "url": "https://github.com/chatman-media/chatman_sales/issues"
+    "url": "https://github.com/chatman-media/sales/issues"
   },
-  "dependencies": {
-    "@chatman/rag": "github:chatman-media/chatbot_rag#7e48cc9734ccba170d35ca1196607297711957e6",
-    "zod": "^4.4.1"
+  "peerDependencies": {
+    "zod": ">=4.0.0"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.14",
+    "@chatman/rag": "github:chatman-media/chatbot_rag#7e48cc9734ccba170d35ca1196607297711957e6",
     "@types/bun": "1.3.14",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "zod": "^4.4.1"
   }
 }
