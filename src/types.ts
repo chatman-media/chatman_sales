@@ -7,9 +7,9 @@
  * four orthogonal concerns constant (persona, framework, hooks, stage) and
  * rotate one to compare conversion outcomes.
  *
- * Imported into `tg-chatbot` from the sister `sales-guru` repo, where the
- * engine was prototyped without touching production code. See
- * `docs/SALES_STYLES.md` for the integration plan and design rationale.
+ * Extracted from the production `@chatman/sales` package. Styles are the
+ * unit of A/B testing — rotate one axis while holding the other three
+ * constant to isolate the effect on conversion.
  */
 import { z } from "zod";
 

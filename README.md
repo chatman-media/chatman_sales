@@ -46,7 +46,7 @@ Peer dependency: [`@chatman/rag`](https://github.com/chatman-media/chatbot_rag) 
 ## Quick start — compose a prompt
 
 ```typescript
-import { composeSystemPrompt, getStyle } from "@chatman/sales";
+import { composeSystemPrompt, getStyleOrThrow } from "@chatman/sales";
 
 const style = getStyleOrThrow("alina-infinity-v1");
 

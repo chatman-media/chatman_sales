@@ -109,7 +109,7 @@ export const MODELS: readonly ModelInfo[] = [
       "Good cheaper alternative on Ollama Cloud when Qwen 3.5 is overkill.",
   },
 
-  // ─── OpenRouter (future — provider not yet wired into tg-chatbot) ─────
+  // ─── OpenRouter ────────────────────────────────────────────────────────
   {
     id: "anthropic/claude-haiku-4.5",
     provider: "openrouter",

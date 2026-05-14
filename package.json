@@ -37,7 +37,7 @@
     "url": "https://github.com/chatman-media/chatman_sales/issues"
   },
   "dependencies": {
-    "@chatman/rag": "github:chatman-media/chatbot_rag",
+    "@chatman/rag": "github:chatman-media/chatbot_rag#7e48cc9734ccba170d35ca1196607297711957e6",
     "zod": "^4.4.1"
   },
   "devDependencies": {
