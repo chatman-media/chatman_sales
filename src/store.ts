@@ -38,7 +38,7 @@ export interface ISkillOutcomesRepo {
   /** Record a skill outcome for a single match. */
   record(opts: {
     skillSlug: string;
-    styleId: number;
+    styleSlug: string;
     leadId: number;
     outcome: EloOutcome;
     source: string;
@@ -76,7 +76,7 @@ export interface SelfPlayMatchRecord extends SelfPlayMatchSummary {
 
 export interface ISelfPlayMatchesRepo {
   /** Insert a completed match and return its id. */
-  insert(match: Omit<SelfPlayMatchRecord, "id">): Promise<number>;
+  insert(match: Omit<SelfPlayMatchRecord, "id"> & { judge_reason: string }): Promise<number>;
   /** Fetch full match with transcript (null if not found). */
   byId(id: number): Promise<SelfPlayMatchRecord | null>;
   /** List recent matches, optionally filtered. */
