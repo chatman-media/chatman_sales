@@ -5,7 +5,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Bun](https://img.shields.io/badge/runtime-Bun-fbf0df?logo=bun&logoColor=black)](https://bun.sh)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-[![powered by @chatman/rag](https://img.shields.io/badge/RAG-@chatman%2Frag-6366f1)](https://github.com/chatman-media/chatbot_rag)
+[![powered by @chatman-media/rag](https://img.shields.io/badge/RAG-@chatman--media%2Frag-6366f1)](https://github.com/chatman-media/rag)
 
 **LLM-powered sales funnel engine for conversational bots.** Persona composition, funnel stage routing, A/B testing with ELO ratings, self-play evaluation, and a coach LLM that iterates on failing styles.
 
@@ -40,7 +40,7 @@ bun add @chatman-media/sales     # Bun
 npm install @chatman-media/sales # npm / pnpm / yarn
 ```
 
-Peer dependency: [`@chatman/rag`](https://github.com/chatman-media/chatbot_rag) for `ChatClient`, `EmbeddingClient`, `IKbStore`, and `answerWithRag`.
+Peer dependency: [`@chatman-media/rag`](https://github.com/chatman-media/rag) for `ChatClient`, `EmbeddingClient`, `IKbStore`, and `answerWithRag`.
 
 ---
 
@@ -184,7 +184,7 @@ const mirroring = SKILL_BY_SLUG.get("mirroring");
 └── store.ts          Storage interfaces (IKbStore, ISelfPlayMatchesRepo, …)
 ```
 
-Depends on [`@chatman/rag`](https://github.com/chatman-media/chatbot_rag) for `ChatClient`, `EmbeddingClient`, `IKbStore`, `answerWithRag`, and `gradeSkills`.
+Depends on [`@chatman-media/rag`](https://github.com/chatman-media/rag) for `ChatClient`, `EmbeddingClient`, `IKbStore`, `answerWithRag`, and `gradeSkills`.
 
 ---
 
