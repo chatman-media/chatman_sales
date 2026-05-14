@@ -11,7 +11,7 @@
  * any error we surface a draw + the raw model output as reason — so a
  * judge crash doesn't lose the run.
  */
-import type { ChatClient, ChatMessage } from "@chatman/rag";
+import type { ChatClient, ChatMessage } from "@chatman-media/rag";
 import type { EloOutcome } from "../elo.ts";
 
 export interface JudgeInput {

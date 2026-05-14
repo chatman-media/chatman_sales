@@ -1,4 +1,4 @@
-import { renderSummaryBlock, renderUserFactsBlock } from "@chatman/rag";
+import { renderSummaryBlock, renderUserFactsBlock } from "@chatman-media/rag";
 import type { FunnelStage, Hook, Style } from "./types.ts";
 
 const HOOK_LABELS: Record<Hook["kind"], string> = {

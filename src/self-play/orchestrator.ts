@@ -17,7 +17,7 @@ import {
   gradeSkills,
   type IKbStore,
   NO_CONTEXT_MARKER,
-} from "@chatman/rag";
+} from "@chatman-media/rag";
 import type { EloOutcome } from "../elo.ts";
 import { eloUpdate } from "../elo.ts";
 import type { SkillForPrompt } from "../prompt.ts";

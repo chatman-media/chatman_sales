@@ -23,7 +23,7 @@ import type { ISelfPlayMatchesRepo } from "./store.ts";
  * Cost: 1 LLM call per coach run. Run weekly or on-demand, not per match.
  */
 
-import type { ChatClient, ChatMessage } from "@chatman/rag";
+import type { ChatClient, ChatMessage } from "@chatman-media/rag";
 import {
   CANDIDATE_PERSONAS,
   type CandidatePersona,

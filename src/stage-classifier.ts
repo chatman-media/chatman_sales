@@ -1,4 +1,4 @@
-import type { ChatClient } from "@chatman/rag";
+import type { ChatClient } from "@chatman-media/rag";
 import { nextStage } from "./stage-router.ts";
 import { FUNNEL_STAGES, type FunnelStage } from "./types.ts";
 

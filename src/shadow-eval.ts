@@ -19,7 +19,7 @@
  *   winner='draw' → counted as 0.5 wins for Wilson — same `actualScore`
  *                   convention used in ELO.
  */
-import type { ChatClient, EmbeddingClient, IKbStore } from "@chatman/rag";
+import type { ChatClient, EmbeddingClient, IKbStore } from "@chatman-media/rag";
 import { runPairwiseMatch } from "./self-play/pairwise.ts";
 import type { CandidatePersona } from "./self-play/personas.ts";
 import { wilsonLowerBound } from "./skill-recommendations.ts";
