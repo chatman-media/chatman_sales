@@ -9,6 +9,7 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
+    "test": "bun test",
     "check": "biome check ./src",
     "format": "biome format --write ./src"
   },
