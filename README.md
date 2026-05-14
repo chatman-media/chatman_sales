@@ -1,4 +1,4 @@
-# @chatman/sales
+# @chatman-media/sales
 
 [![CI](https://github.com/chatman-media/sales/actions/workflows/ci.yml/badge.svg)](https://github.com/chatman-media/sales/actions/workflows/ci.yml)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -35,8 +35,8 @@ Built from the production sales layer of [sales-guru](https://github.com/chatman
 ## Install
 
 ```bash
-bun add @chatman/sales     # Bun
-npm install @chatman/sales # npm / pnpm / yarn
+bun add @chatman-media/sales     # Bun
+npm install @chatman-media/sales # npm / pnpm / yarn
 ```
 
 Peer dependency: [`@chatman/rag`](https://github.com/chatman-media/chatbot_rag) for `ChatClient`, `EmbeddingClient`, `IKbStore`, and `answerWithRag`.
@@ -46,7 +46,7 @@ Peer dependency: [`@chatman/rag`](https://github.com/chatman-media/chatbot_rag) 
 ## Quick start — compose a prompt
 
 ```typescript
-import { composeSystemPrompt, getStyleOrThrow } from "@chatman/sales";
+import { composeSystemPrompt, getStyleOrThrow } from "@chatman-media/sales";
 
 const style = getStyleOrThrow("marina-prime-v1");
 
@@ -59,7 +59,7 @@ const prompt = composeSystemPrompt(style, "qualify", kbContext, {
 ## Stage routing
 
 ```typescript
-import { nextStage, classifyStage } from "@chatman/sales";
+import { nextStage, classifyStage } from "@chatman-media/sales";
 
 // Fast regex (zero cost):
 const stage = nextStage({ turnNumber: 3, currentStage: "qualify", lastUserMessage: msg });
@@ -72,7 +72,7 @@ console.log(result.stage, result.confidence, result.source); // "pitch" 0.87 "ll
 ## A/B testing with ELO
 
 ```typescript
-import { pickVariant, eloUpdate } from "@chatman/sales";
+import { pickVariant, eloUpdate } from "@chatman-media/sales";
 
 // Deterministic assignment — same user always gets same style:
 const styleSlug = pickVariant(
@@ -90,7 +90,7 @@ const newRating = eloUpdate(currentRating, "won"); // K=32, baseline=1500
 ## Self-play evaluation
 
 ```typescript
-import { runSelfPlayMatch, CANDIDATE_PERSONAS } from "@chatman/sales";
+import { runSelfPlayMatch, CANDIDATE_PERSONAS } from "@chatman-media/sales";
 
 const result = await runSelfPlayMatch(deps, {
   style: myStyle,
@@ -108,7 +108,7 @@ console.log(result.fabricationsCaught); // reflect guard catches
 ## Coach LLM
 
 ```typescript
-import { proposeStyleEdits, applyEditsToStyle } from "@chatman/sales";
+import { proposeStyleEdits, applyEditsToStyle } from "@chatman-media/sales";
 
 const proposal = await proposeStyleEdits({ style, matchesRepo, chat });
 console.log(proposal.summary);   // "Bot too formal with price-sensitive personas"
@@ -124,7 +124,7 @@ const improved = applyEditsToStyle(style, proposal.edits);
 All DB-heavy modules accept injected interfaces — no ORM dependency:
 
 ```typescript
-import type { ISelfPlayMatchesRepo, ISkillsRepo, IStyleRatingsRepo } from "@chatman/sales";
+import type { ISelfPlayMatchesRepo, ISkillsRepo, IStyleRatingsRepo } from "@chatman-media/sales";
 
 // Implement for your DB (Postgres, SQLite, in-memory):
 class MyMatchesRepo implements ISelfPlayMatchesRepo {
@@ -150,7 +150,7 @@ class MyMatchesRepo implements ISelfPlayMatchesRepo {
 25 atomic techniques from Cialdini, Voss, NLP, and classical sales — each with a `promptFragment` injected into the system prompt and an `applicableStages` filter:
 
 ```typescript
-import { SKILL_CATALOGUE, SKILL_BY_SLUG } from "@chatman/sales";
+import { SKILL_CATALOGUE, SKILL_BY_SLUG } from "@chatman-media/sales";
 
 const mirroring = SKILL_BY_SLUG.get("mirroring");
 // { slug: "mirroring", family: "voss", promptFragment: "...", applicableStages: ["qualify", "objection"] }
@@ -161,7 +161,7 @@ const mirroring = SKILL_BY_SLUG.get("mirroring");
 ## Architecture
 
 ```
-@chatman/sales
+@chatman-media/sales
 ├── types.ts          Style / FunnelStage / Hook schemas (zod)
 ├── prompt.ts         System prompt composition
 ├── stage-router.ts   Regex funnel stage router

@@ -1,5 +1,5 @@
 {
-  "name": "@chatman/sales",
+  "name": "@chatman-media/sales",
   "version": "0.1.0",
   "description": "LLM-powered sales funnel engine — persona composition, A/B testing, ELO rating, self-play evaluation for conversational bots.",
   "type": "module",
@@ -23,8 +23,7 @@
     "typecheck": "tsc --noEmit",
     "test": "bun test",
     "check": "biome check ./src",
-    "format": "biome format --write ./src",
-    "test": "bun test"
+    "format": "biome format --write ./src"
   },
   "keywords": [
     "sales-bot",
