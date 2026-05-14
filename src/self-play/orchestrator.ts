@@ -10,14 +10,15 @@
  * persona-prompt loop (no KB, no skills).
  */
 import {
-  NO_CONTEXT_MARKER,
   answerWithRag,
   type ChatClient,
   type ChatMessage,
   type EmbeddingClient,
   gradeSkills,
   type IKbStore,
+  NO_CONTEXT_MARKER,
 } from "@chatman/rag";
+import type { EloOutcome } from "../elo.ts";
 import { eloUpdate } from "../elo.ts";
 import type { SkillForPrompt } from "../prompt.ts";
 import { nextStage } from "../stage-router.ts";
@@ -31,7 +32,6 @@ import type {
   IUsersRepo,
 } from "../store.ts";
 import type { FunnelStage, Style } from "../types.ts";
-import type { EloOutcome } from "../elo.ts";
 import { type JudgeVerdict, judgeMatch } from "./judge.ts";
 import type { CandidatePersona } from "./personas.ts";
 
@@ -121,13 +121,19 @@ function buildSalesHistory(
 }
 
 /** Exported for tests so the regex can be exercised without a full match. */
-export const _testCandidateConcluded = (text: string): boolean => candidateConcluded(text);
+export const _testCandidateConcluded = (text: string): boolean =>
+  candidateConcluded(text);
 
 function candidateConcluded(text: string): boolean {
   const t = text.toLowerCase();
-  if (/(давай[те]*\s+(оформ|анкет|поех|созв|попроб|начн|сдела))/i.test(t)) return true;
-  if (/(я\s+согласн[аы]|я\s+готов[а]?\s+(оформ|поех|начать|подать))/i.test(t)) return true;
-  if (/^ок\s*[!,.\s]*(давай|оформ|поех|анкет|готов|подаём|подаем|начн)/i.test(t)) return true;
+  if (/(давай[те]*\s+(оформ|анкет|поех|созв|попроб|начн|сдела))/i.test(t))
+    return true;
+  if (/(я\s+согласн[аы]|я\s+готов[а]?\s+(оформ|поех|начать|подать))/i.test(t))
+    return true;
+  if (
+    /^ок\s*[!,.\s]*(давай|оформ|поех|анкет|готов|подаём|подаем|начн)/i.test(t)
+  )
+    return true;
   if (/(не\s+интересно|мне\s+(не\s+)?подход|передумал)/i.test(t)) return true;
   if (/(не\s+пишите|отстань|это\s+развод)/i.test(t)) return true;
   return false;
@@ -140,7 +146,9 @@ export async function runSelfPlayMatch(
   const maxTurns = input.maxTurns ?? DEFAULT_MAX_TURNS;
   const transcript: SelfPlayMatchResult["transcript"] = [];
 
-  const skillRows = (await deps.skills.skillsForStyle(input.styleId)).filter((r) => r.is_enabled);
+  const skillRows = (await deps.skills.skillsForStyle(input.styleId)).filter(
+    (r) => r.is_enabled,
+  );
   const skills: SkillForPrompt[] = skillRows.map((r) => ({
     slug: r.slug,
     displayName: r.display_name,
@@ -196,14 +204,16 @@ export async function runSelfPlayMatch(
           input.style.voice.stallCtaReply ??
           "Давай созвонимся — так быстрее всё объясню. В какое время удобно? 😊";
       } else {
-        salesText = deps.stallReply ?? "Секунду, уточню детали и напишу — пара минут.";
+        salesText =
+          deps.stallReply ?? "Секунду, уточню детали и напишу — пара минут.";
       }
     } else {
       consecutiveStalls = 0;
     }
     transcript.push({ role: "salesperson", text: salesText });
 
-    const defaultStall = deps.stallReply ?? "Секунду, уточню детали и напишу — пара минут.";
+    const defaultStall =
+      deps.stallReply ?? "Секунду, уточню детали и напишу — пара минут.";
     if (skills.length > 0 && salesText !== defaultStall) {
       try {
         const used = await gradeSkills({
@@ -218,7 +228,10 @@ export async function runSelfPlayMatch(
       }
     }
 
-    const candidateMessages = buildCandidateHistory(transcript, input.persona.systemPrompt);
+    const candidateMessages = buildCandidateHistory(
+      transcript,
+      input.persona.systemPrompt,
+    );
     let candidateText: string;
     try {
       candidateText = await deps.candidateChat.complete(candidateMessages, {
@@ -230,7 +243,15 @@ export async function runSelfPlayMatch(
         outcome: "draw",
         reason: `candidate LLM failed: ${err instanceof Error ? err.message : String(err)}`,
       };
-      return finalize(deps, input, transcript, skills, verdict, usedSkills, fabricationsCaught);
+      return finalize(
+        deps,
+        input,
+        transcript,
+        skills,
+        verdict,
+        usedSkills,
+        fabricationsCaught,
+      );
     }
     candidateText = candidateText.trim();
     if (!candidateText) {
@@ -238,7 +259,15 @@ export async function runSelfPlayMatch(
         outcome: "lost",
         reason: "candidate produced empty reply (ghosted)",
       };
-      return finalize(deps, input, transcript, skills, verdict, usedSkills, fabricationsCaught);
+      return finalize(
+        deps,
+        input,
+        transcript,
+        skills,
+        verdict,
+        usedSkills,
+        fabricationsCaught,
+      );
     }
     transcript.push({ role: "candidate", text: candidateText });
     userMessageCount++;
@@ -253,7 +282,15 @@ export async function runSelfPlayMatch(
     transcript,
     chat: deps.judgeChat,
   });
-  return finalize(deps, input, transcript, skills, verdict, usedSkills, fabricationsCaught);
+  return finalize(
+    deps,
+    input,
+    transcript,
+    skills,
+    verdict,
+    usedSkills,
+    fabricationsCaught,
+  );
 }
 
 async function finalize(
@@ -269,7 +306,12 @@ async function finalize(
     usedSkills.size > 0 ? skills.filter((s) => usedSkills.has(s.slug)) : skills;
   let leadId = -1;
   if (attributedSkills.length > 0) {
-    leadId = await persistSelfPlayOutcome(deps, input, attributedSkills, verdict);
+    leadId = await persistSelfPlayOutcome(
+      deps,
+      input,
+      attributedSkills,
+      verdict,
+    );
   }
   const result: SelfPlayMatchResult = {
     styleSlug: input.style.slug,
@@ -312,7 +354,10 @@ async function persistSelfPlayOutcome(
   }
 
   const current = await deps.ratings.getRating(input.styleId);
-  await deps.ratings.setRating(input.styleId, eloUpdate(current, verdict.outcome));
+  await deps.ratings.setRating(
+    input.styleId,
+    eloUpdate(current, verdict.outcome),
+  );
 
   return lead.id;
 }

@@ -1,7 +1,5 @@
 import type { SkillAggregate, SkillRow } from "./store.ts";
 
-
-
 /**
  * Data-driven skill picker. Given the catalogue + per-skill outcome
  * aggregates, recommends a ranked subset using Wilson lower-bound
@@ -62,7 +60,11 @@ const DEFAULTS = {
  *   p = wins/n
  *   lower = (p + z²/(2n) - z*sqrt((p(1-p) + z²/(4n))/n)) / (1 + z²/n)
  */
-export function wilsonLowerBound(wins: number, total: number, z: number = DEFAULTS.z): number {
+export function wilsonLowerBound(
+  wins: number,
+  total: number,
+  z: number = DEFAULTS.z,
+): number {
   if (total === 0) return 0;
   const p = wins / total;
   const z2 = z * z;
@@ -95,7 +97,8 @@ export function rankSkillRecommendations(
     // Half-credit for draws — same convention ELO uses.
     const successCount = wins + 0.5 * draws;
     const observedRate = count > 0 ? successCount / count : Number.NaN;
-    const confidenceLower = count >= minSamples ? wilsonLowerBound(successCount, count, z) : 0;
+    const confidenceLower =
+      count >= minSamples ? wilsonLowerBound(successCount, count, z) : 0;
     out.push({
       slug: skill.slug,
       display_name: skill.display_name,

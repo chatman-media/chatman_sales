@@ -1,4 +1,3 @@
-import type { IConversationsRepo, ILeadsRepo, ISelfPlayMatchesRepo, ISkillOutcomesRepo, ISkillsRepo, IStyleRatingsRepo, IShadowEvaluationsRepo, IUsersRepo, IPairwiseMatchesRepo } from "./store.ts";
 /**
  * Shadow A/B runner — pits a freshly-forked style version (B) head-to-head
  * against its parent (A) over N pairwise matches, then computes a Wilson
@@ -20,18 +19,21 @@ import type { IConversationsRepo, ILeadsRepo, ISelfPlayMatchesRepo, ISkillOutcom
  *   winner='draw' → counted as 0.5 wins for Wilson — same `actualScore`
  *                   convention used in ELO.
  */
-import type { ConversationsRepo } from "../db/repos/conversations.ts";
-import type { KbRepo } from "../db/repos/kb.ts";
-import type { LeadsRepo } from "../db/repos/leads.ts";
-import type { ShadowEvaluationsRepo } from "../db/repos/shadow-evaluations.ts";
-import type { SkillOutcomesRepo, StyleRatingsRepo } from "../db/repos/skill-outcomes.ts";
-import type { SkillsRepo } from "../db/repos/skills.ts";
-import type { UsersRepo } from "../db/repos/users.ts";
-import type { ChatClient } from "../rag/chat.ts";
-import type { EmbeddingClient } from "../rag/embed.ts";
+import type { ChatClient, EmbeddingClient, IKbStore } from "@chatman/rag";
 import { runPairwiseMatch } from "./self-play/pairwise.ts";
 import type { CandidatePersona } from "./self-play/personas.ts";
 import { wilsonLowerBound } from "./skill-recommendations.ts";
+import type {
+  IConversationsRepo,
+  ILeadsRepo,
+  IPairwiseMatchesRepo,
+  ISelfPlayMatchesRepo,
+  IShadowEvaluationsRepo,
+  ISkillOutcomesRepo,
+  ISkillsRepo,
+  IStyleRatingsRepo,
+  IUsersRepo,
+} from "./store.ts";
 import type { Style } from "./types.ts";
 
 export interface ShadowEvalDeps {
@@ -48,8 +50,8 @@ export interface ShadowEvalDeps {
   judgeChat: ChatClient;
   embedder: EmbeddingClient;
   vacanciesBlock?: string;
-  matches: import("./store.ts").ISelfPlayMatchesRepo;
-  pairwiseMatches: import("./store.ts").IPairwiseMatchesRepo;
+  matches: ISelfPlayMatchesRepo;
+  pairwiseMatches: IPairwiseMatchesRepo;
 }
 
 export interface ShadowEvalInput {
@@ -90,7 +92,10 @@ export function shadowDecide(
  * message; partial results are NOT rolled back so the operator still sees
  * "got 4 of 8 pairs before X happened".
  */
-export async function runShadowEval(deps: ShadowEvalDeps, input: ShadowEvalInput): Promise<void> {
+export async function runShadowEval(
+  deps: ShadowEvalDeps,
+  input: ShadowEvalInput,
+): Promise<void> {
   const pairs: Array<{ persona: CandidatePersona }> = [];
   for (const persona of input.personas) {
     for (let r = 0; r < input.runs; r++) {
@@ -99,7 +104,11 @@ export async function runShadowEval(deps: ShadowEvalDeps, input: ShadowEvalInput
   }
   const total = pairs.length;
   if (total === 0) {
-    await deps.shadowRepo.update(input.evalId, { status: "complete", decision: "inconclusive", totalPairs: 0 });
+    await deps.shadowRepo.update(input.evalId, {
+      status: "complete",
+      decision: "inconclusive",
+      totalPairs: 0,
+    });
     return;
   }
 
@@ -124,7 +133,9 @@ export async function runShadowEval(deps: ShadowEvalDeps, input: ShadowEvalInput
           candidateChat: deps.candidateChat,
           judgeChat: deps.judgeChat,
           embedder: deps.embedder,
-          ...(deps.vacanciesBlock ? { vacanciesBlock: deps.vacanciesBlock } : {}),
+          ...(deps.vacanciesBlock
+            ? { vacanciesBlock: deps.vacanciesBlock }
+            : {}),
         },
         {
           styleA: input.parentStyle,
@@ -138,15 +149,26 @@ export async function runShadowEval(deps: ShadowEvalDeps, input: ShadowEvalInput
       if (result.verdict.winner === "a") aWins++;
       else if (result.verdict.winner === "b") bWins++;
       else draws++;
-      await deps.shadowRepo.update(input.evalId, { totalPairs: aWins + bWins + draws, bWins: bWins + 0.5 * draws });
+      await deps.shadowRepo.update(input.evalId, {
+        totalPairs: aWins + bWins + draws,
+        bWins: bWins + 0.5 * draws,
+      });
     }
 
     const bAdjusted = bWins + 0.5 * draws;
     const decision = shadowDecide(bAdjusted, total);
-    await deps.shadowRepo.update(input.evalId, { status: "complete", decision, totalPairs: total, bWins: bAdjusted });
+    await deps.shadowRepo.update(input.evalId, {
+      status: "complete",
+      decision,
+      totalPairs: total,
+      bWins: bAdjusted,
+    });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    await deps.shadowRepo.update(input.evalId, { status: "failed", error: msg });
+    await deps.shadowRepo.update(input.evalId, {
+      status: "failed",
+      error: msg,
+    });
     console.warn(
       `[shadow-eval] eval #${input.evalId} failed after ${aWins + bWins + draws}/${total} pairs: ${msg}`,
     );

@@ -34,7 +34,8 @@ const RE = {
     `${D}(ок|ладно|давай|согласн|готов|хочу|поехали|интересно|подходит|когда созв|удобн)${E}`,
     "iu",
   ),
-  qualifier: /(\d{2}\s*лет|года?\s|город[еа]|опыт|был[ао]|есть ли|занималась|занимался)/iu,
+  qualifier:
+    /(\d{2}\s*лет|года?\s|город[еа]|опыт|был[ао]|есть ли|занималась|занимался)/iu,
   greeting: /^\s*(привет|hi|hey|здрав|добр)/iu,
 };
 
@@ -53,7 +54,9 @@ export function nextStage(input: StageInput): FunnelStage {
 
   if (
     RE.agreement.test(text) &&
-    (currentStage === "pitch" || currentStage === "qualify" || currentStage === "objection")
+    (currentStage === "pitch" ||
+      currentStage === "qualify" ||
+      currentStage === "objection")
   ) {
     return "close";
   }

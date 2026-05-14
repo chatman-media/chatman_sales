@@ -25,7 +25,10 @@ export const coldDirectPas: Style = StyleSchema.parse({
   },
   framework: "PAS",
   hooks: [
-    { kind: "authority", text: "10 лет на рынке, контракты с Storm, Elite, Next" },
+    {
+      kind: "authority",
+      text: "10 лет на рынке, контракты с Storm, Elite, Next",
+    },
     { kind: "scarcity", text: "поток закрывается через 5 дней" },
   ],
   stages: {

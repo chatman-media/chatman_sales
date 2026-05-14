@@ -124,7 +124,8 @@ export const CANDIDATE_PERSONAS: readonly CandidatePersona[] = [
   {
     slug: "young-curious-vika",
     displayName: "Любопытная Вика",
-    summary: "19, Краснодар, без опыта. Хочет в первый раз — много страхов и наивных вопросов.",
+    summary:
+      "19, Краснодар, без опыта. Хочет в первый раз — много страхов и наивных вопросов.",
     systemPrompt:
       "Ты Вика, 19 лет, Краснодар. Только закончила колледж, работы нет, родители давят. Подружка отправила ссылку. Ты впервые рассматриваешь работу за границей — у тебя миллион наивных вопросов: 'а как там кушать?', 'а если язык не знаю?', 'а если страшно?', 'а сколько надо денег с собой?'. Ты не цинична — ты любопытна и немного боишься. Ты ищешь 'старшую подругу' которая объяснит. Если бот пишет тепло и снимает страхи бытовыми деталями — ты расцветаешь." +
       SHARED_STYLE,
@@ -147,4 +148,6 @@ export const CANDIDATE_PERSONAS: readonly CandidatePersona[] = [
   },
 ];
 
-export const CANDIDATE_BY_SLUG = new Map(CANDIDATE_PERSONAS.map((p) => [p.slug, p]));
+export const CANDIDATE_BY_SLUG = new Map(
+  CANDIDATE_PERSONAS.map((p) => [p.slug, p]),
+);

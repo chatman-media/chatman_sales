@@ -9,11 +9,15 @@
  * `runPairwiseMatch` (drives the two solo runs in sequence).
  */
 import type { ChatClient, ChatMessage } from "@chatman/rag";
-import { eloUpdatePair } from "../elo.ts";
 import type { EloOutcome } from "../elo.ts";
+import { eloUpdatePair } from "../elo.ts";
 import type { IPairwiseMatchesRepo } from "../store.ts";
 import type { Style } from "../types.ts";
-import { runSelfPlayMatch, type SelfPlayDeps, type SelfPlayMatchResult } from "./orchestrator.ts";
+import {
+  runSelfPlayMatch,
+  type SelfPlayDeps,
+  type SelfPlayMatchResult,
+} from "./orchestrator.ts";
 import type { CandidatePersona } from "./personas.ts";
 
 export interface PairwiseDeps extends SelfPlayDeps {
@@ -68,7 +72,10 @@ Return EXACTLY this JSON, nothing else:
 
 function transcriptToString(t: SelfPlayMatchResult["transcript"]): string {
   return t
-    .map((m, i) => `[${i + 1}] ${m.role === "candidate" ? "candidate" : "salesperson"}: ${m.text}`)
+    .map(
+      (m, i) =>
+        `[${i + 1}] ${m.role === "candidate" ? "candidate" : "salesperson"}: ${m.text}`,
+    )
     .join("\n");
 }
 

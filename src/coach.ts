@@ -24,7 +24,10 @@ import type { ISelfPlayMatchesRepo } from "./store.ts";
  */
 
 import type { ChatClient, ChatMessage } from "@chatman/rag";
-import { CANDIDATE_PERSONAS, type CandidatePersona } from "./self-play/personas.ts";
+import {
+  CANDIDATE_PERSONAS,
+  type CandidatePersona,
+} from "./self-play/personas.ts";
 import type { Style } from "./types.ts";
 
 export interface CoachProposal {
@@ -102,13 +105,20 @@ Omit any "edits" sub-key when there's no change for it. Empty edits object = no 
 
 No markdown, no code fences, no commentary outside the JSON.`;
 
-function transcriptToText(t: Array<{ role: "candidate" | "salesperson"; text: string }>): string {
+function transcriptToText(
+  t: Array<{ role: "candidate" | "salesperson"; text: string }>,
+): string {
   return t
-    .map((m, i) => `[${i + 1}] ${m.role === "candidate" ? "candidate" : "salesperson"}: ${m.text}`)
+    .map(
+      (m, i) =>
+        `[${i + 1}] ${m.role === "candidate" ? "candidate" : "salesperson"}: ${m.text}`,
+    )
     .join("\n");
 }
 
-export async function proposeStyleEdits(input: CoachInput): Promise<CoachProposal> {
+export async function proposeStyleEdits(
+  input: CoachInput,
+): Promise<CoachProposal> {
   const sampleSize = input.sampleSize ?? 8;
 
   // Pull losses first, then draws to fill the sample. Wins are uninformative
@@ -134,16 +144,17 @@ export async function proposeStyleEdits(input: CoachInput): Promise<CoachProposa
   const sample = [...losses, ...draws];
   if (sample.length === 0) {
     return {
-      summary: "No lost or draw matches found for this style — nothing to coach on.",
+      summary:
+        "No lost or draw matches found for this style — nothing to coach on.",
       edits: {},
       rationale: [],
     };
   }
 
   // Hydrate transcripts (list returns summaries without text).
-  const fullMatches = (await Promise.all(sample.map((s) => input.matchesRepo.byId(s.id)))).filter(
-    (m): m is NonNullable<typeof m> => m !== null,
-  );
+  const fullMatches = (
+    await Promise.all(sample.map((s) => input.matchesRepo.byId(s.id)))
+  ).filter((m): m is NonNullable<typeof m> => m !== null);
 
   const transcriptsBlock = fullMatches
     .map((m) => {
@@ -258,7 +269,10 @@ export function parseProposal(raw: string): CoachProposal {
  * Returned style is NOT validated against StyleSchema — caller should run
  * `StyleSchema.parse(applied)` to catch any drift before persisting.
  */
-export function applyEditsToStyle(style: Style, edits: CoachProposal["edits"]): Style {
+export function applyEditsToStyle(
+  style: Style,
+  edits: CoachProposal["edits"],
+): Style {
   const out: Style = {
     ...style,
     voice: { ...style.voice, forbid: [...style.voice.forbid] },
@@ -325,7 +339,13 @@ export function applyEditsToStyle(style: Style, edits: CoachProposal["edits"]): 
   }
 
   if (Array.isArray(edits.fewshot_add)) {
-    const validStages = new Set(["opener", "qualify", "pitch", "objection", "close"]);
+    const validStages = new Set([
+      "opener",
+      "qualify",
+      "pitch",
+      "objection",
+      "close",
+    ]);
     for (const fs of edits.fewshot_add) {
       if (!fs.user.trim() || !fs.assistant.trim()) continue;
       const entry: Style["fewShot"][number] = {
@@ -347,17 +367,18 @@ function normalizeProposal(p: unknown, raw: string): CoachProposal {
     return { summary: "(empty proposal)", edits: {}, rationale: [], raw };
   }
   const obj = p as Record<string, unknown>;
-  const summary = typeof obj.summary === "string" ? obj.summary : "(no summary)";
-  const editsRaw = (obj.edits && typeof obj.edits === "object" ? obj.edits : {}) as Record<
-    string,
-    unknown
-  >;
+  const summary =
+    typeof obj.summary === "string" ? obj.summary : "(no summary)";
+  const editsRaw = (
+    obj.edits && typeof obj.edits === "object" ? obj.edits : {}
+  ) as Record<string, unknown>;
   const rationale = Array.isArray(obj.rationale)
     ? obj.rationale.filter((r): r is string => typeof r === "string")
     : [];
 
   const edits: CoachProposal["edits"] = {};
-  if (typeof editsRaw.voice_tone === "string") edits.voice_tone = editsRaw.voice_tone;
+  if (typeof editsRaw.voice_tone === "string")
+    edits.voice_tone = editsRaw.voice_tone;
   if (Array.isArray(editsRaw.voice_forbid_add)) {
     edits.voice_forbid_add = editsRaw.voice_forbid_add.filter(
       (s): s is string => typeof s === "string",
@@ -375,7 +396,13 @@ function normalizeProposal(p: unknown, raw: string): CoachProposal {
   if (editsRaw.stage_guidance && typeof editsRaw.stage_guidance === "object") {
     const sg = editsRaw.stage_guidance as Record<string, unknown>;
     const out: NonNullable<CoachProposal["edits"]["stage_guidance"]> = {};
-    for (const k of ["opener", "qualify", "pitch", "objection", "close"] as const) {
+    for (const k of [
+      "opener",
+      "qualify",
+      "pitch",
+      "objection",
+      "close",
+    ] as const) {
       if (typeof sg[k] === "string") out[k] = sg[k] as string;
     }
     if (Object.keys(out).length > 0) edits.stage_guidance = out;
@@ -398,10 +425,14 @@ function normalizeProposal(p: unknown, raw: string): CoachProposal {
       }));
   }
   if (Array.isArray(editsRaw.skills_attach)) {
-    edits.skills_attach = editsRaw.skills_attach.filter((s): s is string => typeof s === "string");
+    edits.skills_attach = editsRaw.skills_attach.filter(
+      (s): s is string => typeof s === "string",
+    );
   }
   if (Array.isArray(editsRaw.skills_detach)) {
-    edits.skills_detach = editsRaw.skills_detach.filter((s): s is string => typeof s === "string");
+    edits.skills_detach = editsRaw.skills_detach.filter(
+      (s): s is string => typeof s === "string",
+    );
   }
 
   return { summary, edits, rationale };

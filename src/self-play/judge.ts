@@ -55,7 +55,10 @@ No markdown, no explanation outside the JSON. Reason should be one sentence quot
 
 function transcriptToString(t: JudgeInput["transcript"]): string {
   return t
-    .map((m, i) => `[${i + 1}] ${m.role === "candidate" ? "candidate" : "salesperson"}: ${m.text}`)
+    .map(
+      (m, i) =>
+        `[${i + 1}] ${m.role === "candidate" ? "candidate" : "salesperson"}: ${m.text}`,
+    )
     .join("\n");
 }
 
@@ -100,7 +103,8 @@ export function parseVerdict(raw: string): JudgeVerdict {
     const parsed = JSON.parse(stripped);
     if (parsed && typeof parsed === "object") {
       const outcome = pickOutcome(parsed.outcome);
-      const reason = typeof parsed.reason === "string" ? parsed.reason : "(no reason)";
+      const reason =
+        typeof parsed.reason === "string" ? parsed.reason : "(no reason)";
       if (outcome) return { outcome, reason };
     }
   } catch {
@@ -109,14 +113,17 @@ export function parseVerdict(raw: string): JudgeVerdict {
   // Regex fallback — find an "outcome": "..." pair anywhere.
   const m = stripped.match(/"outcome"\s*:\s*"(won|lost|draw)"/i);
   if (m) {
-    const outcome = m[1]!.toLowerCase() as EloOutcome;
+    const outcome = (m[1] ?? "draw").toLowerCase() as EloOutcome;
     const reasonMatch = stripped.match(/"reason"\s*:\s*"([^"]+)"/);
     return {
       outcome,
       reason: reasonMatch?.[1] ?? "(no reason)",
     };
   }
-  console.warn("[judge] unparseable output (first 300 chars):", stripped.slice(0, 300));
+  console.warn(
+    "[judge] unparseable output (first 300 chars):",
+    stripped.slice(0, 300),
+  );
   return { outcome: "draw", reason: "judge output unparseable", raw };
 }
 

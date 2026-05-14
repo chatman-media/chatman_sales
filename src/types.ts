@@ -13,10 +13,22 @@
  */
 import { z } from "zod";
 
-export const FUNNEL_STAGES = ["opener", "qualify", "pitch", "objection", "close"] as const;
+export const FUNNEL_STAGES = [
+  "opener",
+  "qualify",
+  "pitch",
+  "objection",
+  "close",
+] as const;
 export type FunnelStage = (typeof FUNNEL_STAGES)[number];
 
-export const SALES_FRAMEWORKS = ["AIDA", "PAS", "SPIN", "NEPQ", "straight_line"] as const;
+export const SALES_FRAMEWORKS = [
+  "AIDA",
+  "PAS",
+  "SPIN",
+  "NEPQ",
+  "straight_line",
+] as const;
 export type SalesFramework = (typeof SALES_FRAMEWORKS)[number];
 
 export const HOOK_KINDS = [

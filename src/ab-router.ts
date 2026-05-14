@@ -20,7 +20,10 @@ export interface Experiment {
  *
  * Distribution is proportional to `weight`. SHA-256 → first 4 bytes → mod total.
  */
-export function pickVariant(experiment: Experiment, userId: string | number): string {
+export function pickVariant(
+  experiment: Experiment,
+  userId: string | number,
+): string {
   if (experiment.variants.length === 0) {
     throw new Error(`Experiment "${experiment.slug}" has no variants`);
   }
@@ -30,7 +33,9 @@ export function pickVariant(experiment: Experiment, userId: string | number): st
     throw new Error(`Experiment "${experiment.slug}" total weight must be > 0`);
   }
 
-  const hash = createHash("sha256").update(`${experiment.slug}:${userId}`).digest();
+  const hash = createHash("sha256")
+    .update(`${experiment.slug}:${userId}`)
+    .digest();
   const n = hash.readUInt32BE(0) % total;
 
   let cumulative = 0;

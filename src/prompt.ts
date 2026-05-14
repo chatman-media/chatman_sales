@@ -20,7 +20,8 @@ const FRAMEWORK_BLURB: Record<Style["framework"], string> = {
 };
 
 function kbGroundingReminder(personaRole: Style["persona"]["role"]): string {
-  const base = "Никогда не выдумывай цифры, суммы, сроки, условия. Если фактов нет в KB CONTEXT — ";
+  const base =
+    "Никогда не выдумывай цифры, суммы, сроки, условия. Если фактов нет в KB CONTEXT — ";
   return personaRole === "human"
     ? base +
         "напиши по-человечески, что сейчас уточнишь детали (без официоза вроде «обращусь к руководству»), если этих фактов нет в контексте."
@@ -87,7 +88,9 @@ export function composeSystemPrompt(
   const stageCfg = stages[stage];
 
   const factsEntries = persona.facts
-    ? (Object.entries(persona.facts) as [string, string][]).filter(([, v]) => v.trim())
+    ? (Object.entries(persona.facts) as [string, string][]).filter(([, v]) =>
+        v.trim(),
+      )
     : [];
   const factsSection = factsEntries.length
     ? ` ЛИЧНЫЕ ФАКТЫ (используй строго эти данные): ${factsEntries.map(([k, v]) => `${k}: ${v}`).join("; ")}.`
@@ -130,11 +133,14 @@ export function composeSystemPrompt(
   // to apply per turn, instead of being forced to use all of them.
   const skillsForStage =
     options.skills?.filter(
-      (s) => s.applicableStages.length === 0 || s.applicableStages.includes(stage),
+      (s) =>
+        s.applicableStages.length === 0 || s.applicableStages.includes(stage),
     ) ?? [];
   const skillsBlock = skillsForStage.length
     ? `ПРИЁМЫ (используй уместные, не все сразу — выбирай по контексту):\n` +
-      skillsForStage.map((s) => `- ${s.displayName} — ${s.promptFragment}`).join("\n")
+      skillsForStage
+        .map((s) => `- ${s.displayName} — ${s.promptFragment}`)
+        .join("\n")
     : "";
 
   const stageBlock = stageCfg
@@ -146,7 +152,9 @@ export function composeSystemPrompt(
         : "")
     : `ТЕКУЩИЙ ЭТАП: ${stage}. (Специфических правил для этапа нет — используй общий стиль.)`;
 
-  const minorRule = guardrails.noMinors ? "- Если prospect <18 лет — вежливо заверши диалог." : "";
+  const minorRule = guardrails.noMinors
+    ? "- Если prospect <18 лет — вежливо заверши диалог."
+    : "";
   const topicsRule = guardrails.forbiddenTopics.length
     ? `- Запрещённые темы: ${guardrails.forbiddenTopics.join(", ")}.`
     : "";
@@ -177,7 +185,8 @@ export function composeSystemPrompt(
   const userFactsBlock = renderUserFactsBlock(options.userFacts);
   const summaryBlock = renderSummaryBlock(options.conversationSummary);
 
-  const needsGroundingReminder = stageCfg?.groundingRequired === true && !preFetchedKbContext;
+  const needsGroundingReminder =
+    stageCfg?.groundingRequired === true && !preFetchedKbContext;
 
   return [
     personaBlock,

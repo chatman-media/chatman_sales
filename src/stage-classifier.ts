@@ -86,7 +86,9 @@ interface ParsedClassification {
  *  - leading "Ответ:" / "Result:" prefixes
  *  - trailing commentary after the closing brace
  */
-export function parseClassifierOutput(raw: string): ParsedClassification | null {
+export function parseClassifierOutput(
+  raw: string,
+): ParsedClassification | null {
   if (typeof raw !== "string") return null;
   // Strip common code-fence wrappers.
   let s = raw.trim();
@@ -120,7 +122,9 @@ export function parseClassifierOutput(raw: string): ParsedClassification | null 
  * Classify the next funnel stage using LLM, with regex fallback for any
  * uncertainty. Always returns a valid `FunnelStage` — never throws.
  */
-export async function classifyStage(input: ClassifyInput): Promise<ClassifyResult> {
+export async function classifyStage(
+  input: ClassifyInput,
+): Promise<ClassifyResult> {
   const threshold = input.confidenceThreshold ?? 0.6;
   const fallback = (reason: string, confidence: number): ClassifyResult => ({
     stage: nextStage({
