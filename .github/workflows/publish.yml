@@ -1,19 +1,22 @@
-name: Publish to npm
+name: Release
 
 on:
   push:
-    tags:
-      - "v*"
+    branches: [main]
 
 jobs:
-  publish:
-    name: Build & Publish
+  release:
+    name: Test, Build & Release
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
+      issues: write
+      pull-requests: write
       id-token: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
@@ -24,6 +27,7 @@ jobs:
       - run: bun install --frozen-lockfile
       - run: bun test
       - run: bun run build
-      - run: npm publish --access public
+      - run: npx semantic-release
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
