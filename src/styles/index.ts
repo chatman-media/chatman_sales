@@ -1,5 +1,5 @@
 import type { Style } from "../types.ts";
-import { alinaInfinity } from "./alina-infinity.ts";
+import { marinaPrime } from "./marina-prime.ts";
 import { coldDirectPas } from "./cold-direct-pas.ts";
 import { empatheticNepq } from "./empathetic-nepq.ts";
 import { flirtyBelfort } from "./flirty-belfort.ts";
@@ -9,7 +9,7 @@ import { flirtyBelfort } from "./flirty-belfort.ts";
  * of truth. For Phase 2, swap to a SQLite-backed `styles` table loaded at boot.
  */
 export const STYLES: readonly Style[] = [
-  alinaInfinity,
+  marinaPrime,
   flirtyBelfort,
   empatheticNepq,
   coldDirectPas,

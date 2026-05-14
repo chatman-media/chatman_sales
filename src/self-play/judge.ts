@@ -15,7 +15,7 @@ import type { ChatClient, ChatMessage } from "@chatman/rag";
 import type { EloOutcome } from "../elo.ts";
 
 export interface JudgeInput {
-  /** Style under test (e.g. "alina-infinity-v1"). */
+  /** Style under test (e.g. "marina-prime-v1"). */
   styleSlug: string;
   /** Candidate archetype (slug). */
   personaSlug: string;

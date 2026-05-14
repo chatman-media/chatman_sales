@@ -23,7 +23,7 @@ Built from the production sales layer of [sales-guru](https://github.com/chatman
 | **ELO** | `eloUpdate` / `eloUpdatePair` — standard ELO math, K=32, symmetric pairwise |
 | **A/B router** | `pickVariant` — SHA-256 deterministic assignment, same user always gets same variant |
 | **Skills** | 25 persuasion techniques (Cialdini × 7, Voss × 5, NLP × 3, classical sales × 5, custom × 5) |
-| **Built-in styles** | 4 production-tested personas: alina-infinity, cold-direct-pas, empathetic-nepq, flirty-belfort |
+| **Built-in styles** | 4 production-tested personas: marina-prime, cold-direct-pas, empathetic-nepq, flirty-belfort |
 | **Self-play** | `runSelfPlayMatch` — full RAG pipeline vs LLM-driven candidate; per-turn skill grading; reflect guard |
 | **Pairwise** | `runPairwiseMatch` — A vs B against same persona; comparative judge; symmetric ELO update |
 | **Coach** | `proposeStyleEdits` — reads losing transcripts, proposes concrete JSON edits to tone/hooks/guidance/few-shot |
@@ -48,7 +48,7 @@ Peer dependency: [`@chatman/rag`](https://github.com/chatman-media/chatbot_rag) 
 ```typescript
 import { composeSystemPrompt, getStyleOrThrow } from "@chatman/sales";
 
-const style = getStyleOrThrow("alina-infinity-v1");
+const style = getStyleOrThrow("marina-prime-v1");
 
 const prompt = composeSystemPrompt(style, "qualify", kbContext, {
   userFacts: { city: "Москва", age: "24" },
@@ -77,7 +77,7 @@ import { pickVariant, eloUpdate } from "@chatman/sales";
 // Deterministic assignment — same user always gets same style:
 const styleSlug = pickVariant(
   { slug: "summer-2025", variants: [
-    { styleSlug: "alina-infinity-v1", weight: 50 },
+    { styleSlug: "marina-prime-v1", weight: 50 },
     { styleSlug: "empathetic-nepq-v1", weight: 50 },
   ]},
   userId,
@@ -140,10 +140,10 @@ class MyMatchesRepo implements ISelfPlayMatchesRepo {
 
 | Slug | Persona | Framework | Voice |
 |------|---------|-----------|-------|
-| `alina-infinity-v1` | Алина, INFINITY AGENCY | NEPQ | Human recruiter, Telegram-native, warm |
+| `marina-prime-v1` | Марина, PrimeConnect | NEPQ | Human recruiter, Telegram-native, warm |
 | `cold-direct-pas-v1` | Менеджер | PAS | Direct, no fluff, fast pitch |
 | `empathetic-nepq-v1` | Наталья | NEPQ | Warm, anxiety-aware, unhurried |
-| `flirty-belfort-v1` | Алина | Straight Line | Assertive, playful, confident |
+| `flirty-belfort-v1` | Виктория | Straight Line | Assertive, playful, confident |
 
 ## Persuasion skills
 

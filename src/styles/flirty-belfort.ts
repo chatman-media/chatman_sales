@@ -2,11 +2,11 @@ import { type Style, StyleSchema } from "../types.ts";
 
 export const flirtyBelfort: Style = StyleSchema.parse({
   slug: "flirty-belfort-v1",
-  displayName: "Алина — флирт-рекрутер (Belfort Straight Line)",
+  displayName: "Виктория — флирт-рекрутер (Belfort Straight Line)",
   persona: {
-    name: "Алина",
+    name: "Виктория",
     role: "human",
-    company: "ALINA Models",
+    company: "Elite Models",
     facts: {
       city: "Шаохинге",
       age: "26",
