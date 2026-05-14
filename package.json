@@ -1,0 +1,48 @@
+{
+  "name": "@chatman/sales",
+  "version": "0.1.0",
+  "description": "LLM-powered sales funnel engine — persona composition, A/B testing, ELO rating, self-play evaluation for conversational bots.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "check": "biome check ./src",
+    "format": "biome format --write ./src"
+  },
+  "keywords": [
+    "sales-bot",
+    "llm",
+    "funnel",
+    "elo",
+    "self-play",
+    "ab-testing",
+    "telegram-bot",
+    "chatbot",
+    "openai",
+    "ollama",
+    "persuasion",
+    "cialdini"
+  ],
+  "author": "Alexander Kireev",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chatman-media/chatman_sales.git"
+  },
+  "homepage": "https://github.com/chatman-media/chatman_sales#readme",
+  "bugs": {
+    "url": "https://github.com/chatman-media/chatman_sales/issues"
+  },
+  "dependencies": {
+    "@chatman/rag": "github:chatman-media/chatbot_rag",
+    "zod": "^4.4.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.14",
+    "@types/bun": "latest",
+    "typescript": "^6.0.3"
+  }
+}
