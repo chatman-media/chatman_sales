@@ -32,6 +32,8 @@ const makeSkill = (slug: string, family = "cialdini"): SkillRow => ({
   slug,
   display_name: slug,
   family,
+  prompt_fragment: "",
+  applicable_stages: [],
   is_enabled: true,
 });
 

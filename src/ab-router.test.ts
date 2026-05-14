@@ -48,7 +48,8 @@ describe("pickVariant", () => {
     };
     const counts: Record<string, number> = { heavy: 0, light: 0 };
     for (let i = 0; i < 500; i++) {
-      counts[pickVariant(exp, String(i))]++;
+      const v = pickVariant(exp, String(i));
+      counts[v] = (counts[v] ?? 0) + 1;
     }
     // heavy should win ~80% of the time — allow ±10% slack
     expect(counts.heavy).toBeGreaterThan(300);
