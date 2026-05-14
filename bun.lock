@@ -6,7 +6,7 @@
       "name": "@chatman/sales",
       "devDependencies": {
         "@biomejs/biome": "^2.4.14",
-        "@chatman/rag": "github:chatman-media/chatbot_rag#7e48cc9734ccba170d35ca1196607297711957e6",
+        "@chatman/rag": "github:chatman-media/rag#7e48cc9734ccba170d35ca1196607297711957e6",
         "@types/bun": "1.3.14",
         "typescript": "^6.0.3",
         "zod": "^4.4.1",
@@ -35,7 +35,7 @@
 
     "@biomejs/cli-win32-x64": ["@biomejs/cli-win32-x64@2.4.15", "", { "os": "win32", "cpu": "x64" }, "sha512-zBrGq5mx5wwpnow4+2BxUvleDM+GNd4sLbPaMapsSLQLD0NGRCquqPBTgN+7XkUteHvj7M+BstuI8tmnV7+HgQ=="],
 
-    "@chatman/rag": ["@chatman/rag@github:chatman-media/chatbot_rag#7e48cc9", { "dependencies": { "unpdf": "^1.6.2", "zod": "^4.4.1" } }, "chatman-media-rag-7e48cc9", "sha512-GnHkTadRVKO/toSoZsspA6DuN7TcpC/cG1uPa/bUmAaMWPHOip8bnxwWKpyJjdJfdttHZeYor52MFexZiY9/yA=="],
+    "@chatman/rag": ["@chatman/rag@github:chatman-media/rag#7e48cc9", { "dependencies": { "unpdf": "^1.6.2", "zod": "^4.4.1" } }, "chatman-media-rag-7e48cc9", "sha512-GnHkTadRVKO/toSoZsspA6DuN7TcpC/cG1uPa/bUmAaMWPHOip8bnxwWKpyJjdJfdttHZeYor52MFexZiY9/yA=="],
 
     "@types/bun": ["@types/bun@1.3.14", "", { "dependencies": { "bun-types": "1.3.14" } }, "sha512-h1hFqFVcvAvD9j9K7ZW7vd82aSA+rTdznZa+5bwvCwqSB1jmmfLcbIWhOLx1/+boy/xmjgCs/OMUL8hRJSmnPw=="],
 
