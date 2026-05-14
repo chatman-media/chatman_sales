@@ -1,8 +1,8 @@
 import type { Style } from "../types.ts";
-import { marinaPrime } from "./marina-prime.ts";
 import { coldDirectPas } from "./cold-direct-pas.ts";
 import { empatheticNepq } from "./empathetic-nepq.ts";
 import { flirtyBelfort } from "./flirty-belfort.ts";
+import { marinaPrime } from "./marina-prime.ts";
 
 /**
  * In-memory style registry. For Phase 1 (env-flag opt-in) this is the source
