@@ -93,6 +93,12 @@ export interface SelfPlayMatchResult {
   fabricationsCaught: number;
   /** Row id in self_play_matches, or null when the insert failed. */
   matchId: number | null;
+  /**
+   * Whether the match transcript was durably persisted. `false` means the
+   * insert threw and this result exists only in memory — callers running
+   * evaluation loops should treat the run as not recorded.
+   */
+  persisted: boolean;
   /** Non-fatal errors collected during the match (e.g. skill grading failures). */
   warnings: string[];
 }
@@ -333,9 +339,11 @@ async function finalize(
     leadId,
     fabricationsCaught,
     matchId: null,
+    persisted: false,
     warnings,
   };
   result.matchId = await persistSelfPlayMatch(deps, result, verdict.reason);
+  result.persisted = result.matchId !== null;
   return result;
 }
 

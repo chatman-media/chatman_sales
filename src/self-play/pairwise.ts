@@ -52,6 +52,12 @@ export interface PairwiseMatchResult {
   eloAAfter: number;
   eloBAfter: number;
   pairwiseId: number | null;
+  /**
+   * Whether the pairwise match was durably persisted. `false` means the
+   * insert threw and this result exists only in memory — callers running
+   * A/B evaluation loops should treat the comparison as not recorded.
+   */
+  persisted: boolean;
 }
 
 const PAIRWISE_SYSTEM = (hint: string) =>
@@ -179,6 +185,7 @@ export async function runPairwiseMatch(
   if (newB !== bRating) await deps.ratings.setRating(input.styleBId, newB);
 
   let pairwiseId: number | null = null;
+  let persisted = false;
   try {
     pairwiseId = await deps.pairwiseMatches.insert({
       matchAId: matchA.matchId ?? 0,
@@ -189,6 +196,7 @@ export async function runPairwiseMatch(
       winner: verdict.winner,
       reason: verdict.reason,
     });
+    persisted = true;
   } catch (err) {
     console.warn("[pairwise] failed to persist pairwise match:", err);
   }
@@ -203,5 +211,6 @@ export async function runPairwiseMatch(
     eloAAfter: newA,
     eloBAfter: newB,
     pairwiseId,
+    persisted,
   };
 }
