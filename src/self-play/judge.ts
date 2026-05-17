@@ -13,6 +13,7 @@
  */
 import type { ChatClient, ChatMessage } from "@chatman-media/rag";
 import type { EloOutcome } from "../elo.ts";
+import { extractJsonObject } from "../llm-json.ts";
 
 export interface JudgeInput {
   /** Style under test (e.g. "marina-prime-v1"). */
@@ -93,28 +94,18 @@ export async function judgeMatch(input: JudgeInput): Promise<JudgeVerdict> {
  * falls back to regex match if necessary. Exported for tests.
  */
 export function parseVerdict(raw: string): JudgeVerdict {
-  const stripped = raw
-    .replace(/<think>[\s\S]*?<\/think>/gi, "")
-    .replace(/^```(?:json)?\s*/i, "")
-    .replace(/\s*```\s*$/i, "")
-    .trim();
-  // Try direct parse.
-  try {
-    const parsed = JSON.parse(stripped);
-    if (parsed && typeof parsed === "object") {
-      const outcome = pickOutcome(parsed.outcome);
-      const reason =
-        typeof parsed.reason === "string" ? parsed.reason : "(no reason)";
-      if (outcome) return { outcome, reason };
-    }
-  } catch {
-    /* fall through */
+  const parsed = extractJsonObject(raw);
+  if (parsed) {
+    const outcome = pickOutcome(parsed.outcome);
+    const reason =
+      typeof parsed.reason === "string" ? parsed.reason : "(no reason)";
+    if (outcome) return { outcome, reason };
   }
   // Regex fallback — find an "outcome": "..." pair anywhere.
-  const m = stripped.match(/"outcome"\s*:\s*"(won|lost|draw)"/i);
+  const m = raw.match(/"outcome"\s*:\s*"(won|lost|draw)"/i);
   if (m) {
     const outcome = (m[1] ?? "draw").toLowerCase() as EloOutcome;
-    const reasonMatch = stripped.match(/"reason"\s*:\s*"([^"]+)"/);
+    const reasonMatch = raw.match(/"reason"\s*:\s*"([^"]+)"/);
     return {
       outcome,
       reason: reasonMatch?.[1] ?? "(no reason)",
@@ -122,7 +113,7 @@ export function parseVerdict(raw: string): JudgeVerdict {
   }
   console.warn(
     "[judge] unparseable output (first 300 chars):",
-    stripped.slice(0, 300),
+    raw.slice(0, 300),
   );
   return { outcome: "draw", reason: "judge output unparseable", raw };
 }
