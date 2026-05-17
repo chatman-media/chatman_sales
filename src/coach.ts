@@ -1,3 +1,4 @@
+import { extractJsonObject } from "./llm-json.ts";
 import type { ISelfPlayMatchesRepo } from "./store.ts";
 /**
  * Coach-LLM: reads recent self-play LOSSES and DRAWS for a style,
@@ -216,31 +217,12 @@ export async function proposeStyleEdits(
 
 /**
  * Tolerant JSON parser. Strips code fences, attempts JSON.parse, falls
- * back to extracting an outer object via regex. Always returns a valid
- * CoachProposal (with raw output preserved on parse failure).
+ * back to extracting an outer object. Always returns a valid CoachProposal
+ * (with raw output preserved on parse failure).
  */
 export function parseProposal(raw: string): CoachProposal {
-  const stripped = raw
-    .replace(/^```(?:json)?\s*/i, "")
-    .replace(/\s*```\s*$/i, "")
-    .trim();
-  // First try a direct parse.
-  try {
-    const parsed = JSON.parse(stripped);
-    return normalizeProposal(parsed, raw);
-  } catch {
-    /* fall through */
-  }
-  // Try to extract the outermost {...} block.
-  const m = stripped.match(/\{[\s\S]*\}/);
-  if (m) {
-    try {
-      const parsed = JSON.parse(m[0]);
-      return normalizeProposal(parsed, raw);
-    } catch {
-      /* fall through */
-    }
-  }
+  const parsed = extractJsonObject(raw);
+  if (parsed) return normalizeProposal(parsed, raw);
   return {
     summary: "(coach output unparseable — see raw)",
     edits: {},

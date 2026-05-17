@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { shadowDecide } from "./shadow-eval.ts";
+import { shadowDecide } from "../shadow-eval.ts";
 
 describe("shadowDecide", () => {
   test("0 pairs → inconclusive", () => {

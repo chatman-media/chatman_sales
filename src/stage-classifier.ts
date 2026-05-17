@@ -1,4 +1,5 @@
 import type { ChatClient } from "@chatman-media/rag";
+import { extractJsonObject } from "./llm-json.ts";
 import { nextStage } from "./stage-router.ts";
 import { FUNNEL_STAGES, type FunnelStage } from "./types.ts";
 
@@ -89,23 +90,8 @@ interface ParsedClassification {
 export function parseClassifierOutput(
   raw: string,
 ): ParsedClassification | null {
-  if (typeof raw !== "string") return null;
-  // Strip common code-fence wrappers.
-  let s = raw.trim();
-  s = s.replace(/^```(?:json|js)?\s*/i, "").replace(/```\s*$/, "");
-  // Locate the first { and matching last } — naive but works because the
-  // expected payload is a flat object with two scalar fields.
-  const start = s.indexOf("{");
-  const end = s.lastIndexOf("}");
-  if (start < 0 || end <= start) return null;
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(s.slice(start, end + 1));
-  } catch {
-    return null;
-  }
-  if (typeof parsed !== "object" || parsed === null) return null;
-  const obj = parsed as Record<string, unknown>;
+  const obj = extractJsonObject(raw);
+  if (!obj) return null;
   if (typeof obj.stage !== "string") return null;
   if (typeof obj.confidence !== "number" || !Number.isFinite(obj.confidence)) {
     return null;

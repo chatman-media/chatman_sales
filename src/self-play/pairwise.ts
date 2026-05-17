@@ -11,6 +11,7 @@
 import type { ChatClient, ChatMessage } from "@chatman-media/rag";
 import type { EloOutcome } from "../elo.ts";
 import { eloUpdatePair } from "../elo.ts";
+import { extractJsonObject } from "../llm-json.ts";
 import type { IPairwiseMatchesRepo } from "../store.ts";
 import type { Style } from "../types.ts";
 import {
@@ -51,6 +52,12 @@ export interface PairwiseMatchResult {
   eloAAfter: number;
   eloBAfter: number;
   pairwiseId: number | null;
+  /**
+   * Whether the pairwise match was durably persisted. `false` means the
+   * insert threw and this result exists only in memory — callers running
+   * A/B evaluation loops should treat the comparison as not recorded.
+   */
+  persisted: boolean;
 }
 
 const PAIRWISE_SYSTEM = (hint: string) =>
@@ -117,28 +124,17 @@ export async function judgePairwise(args: {
 }
 
 export function parsePairwiseVerdict(raw: string): PairwiseVerdict {
-  const stripped = raw
-    .replace(/<think>[\s\S]*?<\/think>/gi, "")
-    .replace(/^```(?:json)?\s*/i, "")
-    .replace(/\s*```\s*$/i, "")
-    .trim();
-  try {
-    const parsed = JSON.parse(stripped);
-    if (parsed && typeof parsed === "object") {
-      const winner = pickWinner((parsed as Record<string, unknown>).winner);
-      const reason =
-        typeof (parsed as Record<string, unknown>).reason === "string"
-          ? ((parsed as Record<string, unknown>).reason as string)
-          : "(no reason)";
-      if (winner) return { winner, reason };
-    }
-  } catch {
-    /* fall through to regex */
+  const parsed = extractJsonObject(raw);
+  if (parsed) {
+    const winner = pickWinner(parsed.winner);
+    const reason =
+      typeof parsed.reason === "string" ? parsed.reason : "(no reason)";
+    if (winner) return { winner, reason };
   }
-  const m = stripped.match(/"winner"\s*:\s*"(a|b|draw)"/i);
+  const m = raw.match(/"winner"\s*:\s*"(a|b|draw)"/i);
   if (m) {
     const winner = (m[1] ?? "draw").toLowerCase() as PairwiseWinner;
-    const reasonMatch = stripped.match(/"reason"\s*:\s*"([^"]+)"/);
+    const reasonMatch = raw.match(/"reason"\s*:\s*"([^"]+)"/);
     return { winner, reason: reasonMatch?.[1] ?? "(no reason)" };
   }
   return { winner: "draw", reason: "pairwise judge unparseable", raw };
@@ -189,6 +185,7 @@ export async function runPairwiseMatch(
   if (newB !== bRating) await deps.ratings.setRating(input.styleBId, newB);
 
   let pairwiseId: number | null = null;
+  let persisted = false;
   try {
     pairwiseId = await deps.pairwiseMatches.insert({
       matchAId: matchA.matchId ?? 0,
@@ -199,6 +196,7 @@ export async function runPairwiseMatch(
       winner: verdict.winner,
       reason: verdict.reason,
     });
+    persisted = true;
   } catch (err) {
     console.warn("[pairwise] failed to persist pairwise match:", err);
   }
@@ -213,5 +211,6 @@ export async function runPairwiseMatch(
     eloAAfter: newA,
     eloBAfter: newB,
     pairwiseId,
+    persisted,
   };
 }
